@@ -25,43 +25,48 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 ---
 
 ## 2. Slack Bot Integration
-- [ ] **Slack App Setup**
-  - [ ] Create a new Slack App in the Slack Developer Dashboard.
-  - [ ] Configure necessary OAuth scopes, event subscriptions, and bot tokens.
-- [ ] **Basic Bot Functionality**
-  - [ ] Implement code to connect to Slack using the Slack SDK.
-  - [ ] Set up a basic event listener for @mentions.
-  - [ ] Respond with a message like "Hello, I am Klug-Bot" to confirm connectivity.
-  - [ ] Document environment variable setup (e.g., Slack credentials).
+- [X] **Slack App Setup**
+  - [X] Create a new Slack App in the Slack Developer Dashboard.
+  - [X] Configure necessary OAuth scopes, event subscriptions, and bot tokens.
+- [X] **Basic Bot Functionality**
+  - [X] Implement code to connect to Slack using the Slack SDK.
+  - [X] Set up a basic event listener for @mentions.
+  - [X] Respond with a message like "Hello, I am Klug-Bot" to confirm connectivity.
+  - [X] Document environment variable setup (e.g., Slack credentials).
 
 ---
 
 ## 3. Data Model & Storage
-- [ ] **Define Data Model**
-  - [ ] Create a model for a knowledge entry including:
+- [X] **Define Data Model**
+  - [X] Create a model for a knowledge entry including:
     - Unique identifier
     - Content (text)
     - Metadata (Slack username, timestamp, source URL)
     - Semantic embeddings (for vector search)
     - Tags (up to 3, enforced in kebab-case)
-- [ ] **Database Setup**
-  - [ ] Set up a relational database (PostgreSQL/MySQL).
-  - [ ] Create tables for storing knowledge entries.
-  - [ ] Implement CRUD operations for the data model.
+- [X] **Database Setup**
+  - [X] Set up a relational database (PostgreSQL/MySQL).
+  - [X] Create tables for storing knowledge entries.
+  - [X] Implement CRUD operations for the data model.
 - [ ] **Vector Database Integration (Stub)**
-  - [ ] Outline and stub functions for integrating with a vector database for semantic search.
+  - [X] Outline and stub functions for integrating with a vector database for semantic search.
 
 ---
 
 ## 4. Knowledge Storage Functionality
-- [ ] **Direct Learning via Slack Commands**
-  - [ ] Extend the Slack bot’s message handler to capture "learn" commands.
-  - [ ] Parse incoming messages (e.g., "@klug-bot learn the person in charge of SRE is Vlad").
-  - [ ] Extract and validate the knowledge content along with metadata (user, timestamp).
-  - [ ] Save the extracted knowledge to the relational database.
-  - [ ] Stub a function for computing and storing semantic embeddings in the vector DB.
+- [X] **Direct Learning via Slack Commands**
+  - [X] Extend the Slack bot’s message handler to capture "learn" commands.
+  - [X] Parse incoming messages (e.g., "@klug-bot learn the person in charge of SRE is Vlad").
+  - [x] Extract and validate the knowledge content along with metadata (user, timestamp).
+  - [X] Save the extracted knowledge to the relational database.
+  - [X] Stub a function for computing and storing semantic embeddings in the vector DB.
 
 ---
+
+## 4.5. Create Embeddings
+- [ ] **Use a vector store to save info as embeddings**
+  - [ ] Use all-minilm-v2 as embedding and auto convert all info into embeddings
+  - [ ] Store in chroma
 
 ## 5. Knowledge Retrieval & Query Handling
 - [ ] **Query Processing**
