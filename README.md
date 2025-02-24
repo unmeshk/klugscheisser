@@ -18,6 +18,9 @@ Send messages as @test-agent-support-bot
 groups:history
 View messages and other content in private channels that test-agent-support-bot has been added to
 
+files:read
+View files shared in channels and conversations that klug-bot has been added to
+
 ### Event Subscriptions
 
 Event Name	Description	Required Scope

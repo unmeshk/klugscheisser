@@ -2,6 +2,7 @@ import logging
 import asyncio
 import signal
 import uvicorn
+import os
 
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
@@ -51,13 +52,18 @@ signal.signal(signal.SIGINT, handle_sigterm)
 if __name__ == "__main__":
 
     # Verify required environment variables
-    #required_env_vars = ["SLACK_BOT_TOKEN", "SLACK_SIGNING_SECRET"]
-    #missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+    required_env_vars = [
+        "SLACK_BOT_TOKEN", 
+        "SLACK_SIGNING_SECRET",
+        "GEMINI_API_KEY",
+        "DATABASE_URL"
+    ]
+    missing_vars = [var for var in required_env_vars if not os.getenv(var)]
     
-    #if missing_vars:
-    #    raise EnvironmentError(
-    #        f"Missing required environment variables: {', '.join(missing_vars)}"
-    #    )
+    if missing_vars:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
     
    
 

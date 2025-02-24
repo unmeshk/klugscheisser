@@ -64,20 +64,20 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 ---
 
 ## 4.5. Create Embeddings
-- [ ] **Use a vector store to save info as embeddings**
-  - [ ] Use all-minilm-v2 as embedding and auto convert all info into embeddings
-  - [ ] Store in chroma
+- [X] **Use a vector store to save info as embeddings**
+  - [X] Use all-minilm-v2 as embedding and auto convert all info into embeddings
+  - [X] Store in chroma
 
 ## 5. Knowledge Retrieval & Query Handling
-- [ ] **Query Processing**
-  - [ ] Add a command handler for queries (e.g., "@klug-bot who handles SRE?").
-  - [ ] Parse queries to determine user intent.
-  - [ ] Query the vector database (using a stub if needed) to retrieve relevant entries.
-  - [ ] Retrieve corresponding entries from the relational database.
-- [ ] **Response Generation**
-  - [ ] Integrate (or stub) an LLM call to generate a natural language response.
-  - [ ] Handle multiple results (list them) and cases where no entry is found (respond with "I don’t know.").
-  - [ ] Ensure responses are posted in Slack threads.
+- [X] **Query Processing**
+  - [X] Add a command handler for queries (e.g., "@klug-bot who handles SRE?").
+  - [X] Parse queries to determine user intent.
+  - [X] Query the vector database (using a stub if needed) to retrieve relevant entries.
+  - [X] Retrieve corresponding entries from the relational database.
+- [X] **Response Generation**
+  - [X] Integrate (or stub) an LLM call to generate a natural language response.
+  - [X] Handle multiple results (list them) and cases where no entry is found (respond with "I don’t know.").
+  - [X] Ensure responses are posted in Slack threads.
 
 ---
 
