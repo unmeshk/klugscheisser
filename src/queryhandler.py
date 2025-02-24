@@ -6,7 +6,6 @@ from typing import List, Dict, Any, Optional, Tuple
 from google import genai
 from google.genai import types
 from settings import (
-    SIMILARITY_THRESHOLD,
     MAX_RESULTS,
     QUERY_PROMPT_TEMPLATE,
     MAX_OUTPUT_TOKENS,

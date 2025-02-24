@@ -9,6 +9,7 @@ from models import KnowledgeBase, KnowledgeEntrySchema
 from embeddingmanager import EmbeddingManager
 from queryhandler import QueryHandler
 from filehandler import FileHandler
+from settings import MAX_FILE_SIZE
 
 
 logger = logging.getLogger(__name__)
@@ -308,7 +309,8 @@ class KlugBot:
                 results = await self.file_handler.process_file_upload(
                     temp_path,
                     file['filetype'],
-                    metadata
+                    metadata,
+                    MAX_FILE_SIZE
                 )
                 
                 # Send summary

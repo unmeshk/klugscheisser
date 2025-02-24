@@ -44,6 +44,7 @@ Next, add support for bulk knowledge import via file uploads. Generate code that
 3. Validates and saves these entries into the relational database and prepares them for vector embedding insertion.
 4. Includes error handling for unsupported file formats and parsing issues.
 Wire this file upload functionality with the existing Slack bot so that admin users can trigger bulk imports. Ensure the code is modular and integrates with the data storage logic from previous prompts.
+5. Also write a standalone script that takes in a directory and file formats and recursively uploads the contents of every relevant file into the postgres and chroma databases. Allow for metadata augmentation where a url prefix can be provided which is added to the relative paths of the files in the directories.
 
 ## Prompt 6: Conflict Handling, Editing, and Admin Workflows
 Now, extend the functionality to handle conflicts and edits. Generate code that:

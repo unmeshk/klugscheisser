@@ -2,6 +2,7 @@
 SIMILARITY_THRESHOLD = 0.8
 MAX_RESULTS = 5
 MAX_OUTPUT_TOKENS = 2048
+MAX_FILE_SIZE = 5_000_000 # ~5 MB
 LLM_MODEL = 'gemini-2.0-flash'
 
 # Slack users who are able to teach the bot 

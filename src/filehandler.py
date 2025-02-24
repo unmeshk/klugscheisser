@@ -7,7 +7,7 @@ from typing import List, Dict, Any, AsyncGenerator
 from pathlib import Path
 import aiofiles
 from settings import KLUGBOT_TEACHERS
-from models import KnowledgeBase, KnowledgeEntrySchema
+from models import KnowledgeEntrySchema
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -37,12 +37,18 @@ class FileHandler:
     async def process_file_upload(self, 
                                 file_path: str, 
                                 file_type: str,
-                                metadata: Dict[str, Any]) -> Dict[str, Any]:
+                                metadata: Dict[str, Any],
+                                max_file_size=None) -> Dict[str, Any]:
         """
         Process uploaded file and store knowledge entries.
         Returns summary of processing results.
         """
         try:
+            # Check file size
+            file_size = Path(file_path).stat().st_size
+            if max_file_size and file_size > max_file_size:
+                raise ValueError(f"File too large: {file_size} bytes (max: {max_file_size} bytes)")
+            
             # Validate file format
             file_ext = Path(file_path).suffix.lower()
             if file_ext not in self.SUPPORTED_FORMATS:

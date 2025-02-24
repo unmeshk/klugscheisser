@@ -82,16 +82,25 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 ---
 
 ## 6. File Uploads & Bulk Knowledge Import
-- [ ] **File Upload Endpoint/Handler**
-  - [ ] Implement an endpoint or Slack event handler for file uploads.
-  - [ ] Support various file formats: CSV, JSON, TXT, Markdown, PDF.
-- [ ] **File Parsing & Import**
-  - [ ] Parse uploaded files to extract individual knowledge entries.
-  - [ ] Validate and store each entry in the relational database.
-  - [ ] Prepare entries for later vector embedding insertion.
-  - [ ] Handle errors for unsupported formats or parsing failures.
-- [ ] **Admin Trigger**
-  - [ ] Ensure that bulk imports are restricted to admin users.
+- [X] **File Upload Endpoint/Handler**
+  - [X] Implement an endpoint or Slack event handler for file uploads.
+  - [X] Support various file formats: CSV, JSON, TXT, Markdown, PDF.
+  - [ ] Support rst, mdx files
+- [X] **File Parsing & Import**
+  - [X] Parse uploaded files to extract individual knowledge entries.
+  - [X] Validate and store each entry in the relational database.
+  - [X] Prepare entries for later vector embedding insertion.
+  - [X] Handle errors for unsupported formats or parsing failures.
+- [ ] **Scripts for bulk uploads**
+  - [ ] Script to allow offline uploading of data by recursively going through a directory.
+- [X] **Admin Trigger**
+  - [X] Ensure that bulk imports are restricted to admin users.
+
+---
+
+## 6.5 Improved context for conversations
+- [X] **Add message thread as context**
+  - [X] Copy over everything in previous messages in thread as context if app in mentioned in a thread/
 
 ---
 
