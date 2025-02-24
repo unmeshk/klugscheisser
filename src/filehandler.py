@@ -7,6 +7,7 @@ from typing import List, Dict, Any, AsyncGenerator
 from pathlib import Path
 import aiofiles
 from settings import KLUGBOT_TEACHERS
+from models import KnowledgeBase, KnowledgeEntrySchema
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -223,18 +224,22 @@ class FileHandler:
         """Store a content chunk in both databases."""
         try:
             # Create knowledge entry
-            entry = await self.kb.create_entry({
-                'content': content,
-                'slack_username': metadata['user'],
-                'slack_timestamp': metadata['ts'],
-                'source_url': metadata.get('file_url'),
-                'tags': ['imported'],  # You might want to add more specific tags
-                'additional_metadata': {
-                    'file_type': metadata.get('file_type'),
-                    'file_name': metadata.get('file_name'),
+            entry = KnowledgeEntrySchema(
+                content=content,
+                slack_username=metadata['user'],
+                slack_timestamp=metadata['ts'],
+                source_url=metadata['file_url'],
+                tags=['imported'],
+                additional_metadata={
+                    'file_type': metadata['file_type'],
+                    'file_name': metadata['file_name'],
                     'import_source': 'file_upload'
                 }
-            })
+            )
+            entry = await self.kb.create_entry(entry)
+
+            #print(f'Storing: {entry.id}')
+            #print(f'metadata: {metadata}')
             
             # Store embedding
             await self.embedding_manager.store_embedding(
@@ -244,9 +249,11 @@ class FileHandler:
                     'id': str(entry.id),
                     'slack_username': metadata['user'],
                     'slack_timestamp': metadata['ts'],
-                    'source_url': metadata.get('file_url'),
+                    'source_url': metadata['file_url'],
                     'tags': 'imported',
-                    'file_type': metadata.get('file_type')
+                    'file_type': metadata['file_type'],
+                    'file_name': metadata['file_name'],
+                    'import_source': 'file_upload'
                 }
             )
             

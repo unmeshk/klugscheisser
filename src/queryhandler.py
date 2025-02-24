@@ -49,10 +49,13 @@ class QueryHandler:
                 n_results=MAX_RESULTS,
                 include=['metadatas', 'documents', 'distances']
             )
+
+            print(f'Retrived {len(results["ids"][0])} matching info from Chroma.')
+            #print(results)
             
             # Check if we have any good matches
-            if not results['ids'][0] or results['distances'][0][0] > SIMILARITY_THRESHOLD:
-                return "I don't know the answer to that question.", []
+            if not results['ids'][0]: # or results['distances'][0][0] > SIMILARITY_THRESHOLD:
+                return "I don't know the answer to that question. <end>", []
             
             # Format context from results
             contexts = []
@@ -62,9 +65,6 @@ class QueryHandler:
                 results['metadatas'][0],
                 results['distances'][0]
             )):
-                if distance > SIMILARITY_THRESHOLD:
-                    break
-                    
                 contexts.append(f"Content {i+1}: {doc}")
                 entries.append({
                     'id': metadata['id'],
@@ -92,6 +92,8 @@ class QueryHandler:
                 query=query,
                 contexts='\n'.join(contexts)
             )
+
+            print(prompt)
 
             # Generate response
             response = await self.client.aio.models.generate_content(

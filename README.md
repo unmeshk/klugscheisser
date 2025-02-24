@@ -7,16 +7,16 @@ A slack bot that learns and spits out knowledge
 ### Oauth & Permissions
 Scope Description
 app_mentions:read
-View messages that directly mention @test-agent-support-bot in conversations that the app is in
+View messages that directly mention @klug-bot in conversations that the app is in
 
 channels:history
-View messages and other content in public channels that test-agent-support-bot has been added to
+View messages and other content in public channels that klug-bot has been added to
 
 chat:write
-Send messages as @test-agent-support-bot
+Send messages as @klug-bot
 
 groups:history
-View messages and other content in private channels that test-agent-support-bot has been added to
+View messages and other content in private channels that klug-bot has been added to
 
 files:read
 View files shared in channels and conversations that klug-bot has been added to
@@ -51,3 +51,6 @@ GRANT USAGE ON SCHEMA public TO klugbot;
 GRANT CREATE ON SCHEMA public TO klugbot;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO klugbot;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO klugbot;
+
+## Misc
+### SIMILARITY_THRESHOLD is not used. Letting the LLM make the decision on which data is relevant. 
