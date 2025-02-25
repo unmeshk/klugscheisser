@@ -20,7 +20,7 @@ Available knowledge:
 
 Important instructions:
 1. Only use information from the provided knowledge entries
-2. If the information isn't in the knowledge entries, respond with "I don't know"
+2. If the information isn't in the knowledge entries, respond with "I don't have any knowledge about that."
 3. Don't make up or infer information that isn't explicitly stated
 4. If multiple relevant pieces of information exist, combine them the best you can to provide a coherent answer to the question. 
 

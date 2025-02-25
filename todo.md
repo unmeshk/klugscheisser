@@ -91,16 +91,19 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
   - [X] Validate and store each entry in the relational database.
   - [X] Prepare entries for later vector embedding insertion.
   - [X] Handle errors for unsupported formats or parsing failures.
-- [ ] **Scripts for bulk uploads**
-  - [ ] Script to allow offline uploading of data by recursively going through a directory.
+- [X] **Scripts for bulk uploads**
+  - [X] Script to allow offline uploading of data by recursively going through a directory.
 - [X] **Admin Trigger**
   - [X] Ensure that bulk imports are restricted to admin users.
+- [ ] **Bulk delete**
+  - [ ] Allow users to delete everything from a specific source using `@klug-bot delete`
+
 
 ---
 
 ## 6.5 Improved context for conversations
-- [X] **Add message thread as context**
-  - [X] Copy over everything in previous messages in thread as context if app in mentioned in a thread/
+- [ ] **Add message thread as context**
+  - [ ] Copy over everything in previous messages in thread as context if app in mentioned in a thread/
 
 ---
 

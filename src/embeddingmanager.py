@@ -70,3 +70,52 @@ class EmbeddingManager:
         except Exception as e:
             logger.error(f"Error storing embedding: {e}", exc_info=True)
             raise
+            
+    async def delete_embeddings_by_ids(self, entry_ids: list) -> int:
+        """Delete embeddings with matching IDs from ChromaDB.
+        
+        Args:
+            entry_ids: List of document IDs to delete
+            
+        Returns:
+            Number of deleted embeddings
+        """
+        try:
+            if not entry_ids:
+                return 0
+                
+            # Delete from ChromaDB
+            self.collection.delete(ids=entry_ids)
+            
+            return len(entry_ids)
+            
+        except Exception as e:
+            logger.error(f"Error deleting embeddings: {e}", exc_info=True)
+            raise
+            
+    async def delete_embeddings_by_source_url(self, source_url: str) -> int:
+        """Delete embeddings with matching source_url from ChromaDB.
+        
+        Args:
+            source_url: Source URL to match
+            
+        Returns:
+            Number of deleted embeddings
+        """
+        try:
+            # Query to find matching documents
+            results = self.collection.get(
+                where={"source_url": source_url},
+                include=["metadatas", "documents"]
+            )
+            
+            if not results or not results["ids"]:
+                return 0
+                
+            # Delete the matched documents
+            self.collection.delete(ids=results["ids"])
+            return len(results["ids"])
+            
+        except Exception as e:
+            logger.error(f"Error deleting embeddings by source_url: {e}", exc_info=True)
+            raise

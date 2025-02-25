@@ -33,8 +33,12 @@ class KlugBot:
             r'<@[A-Z0-9]+>\s+learn(?:\s+(?P<content>.+))?',
             re.IGNORECASE
         )
+        self.delete_pattern = re.compile(
+            r'<@[A-Z0-9]+>\s+delete(?:\s+(?P<content>.+))?',
+            re.IGNORECASE
+        )
         self.query_pattern = re.compile(
-            r'<@[A-Z0-9]+>\s+(?!learn\s+)(?P<query>.+)',
+            r'<@[A-Z0-9]+>\s+(?!learn\s+)(?!delete\s+)(?P<query>.+)',
             re.IGNORECASE
         )
 
@@ -90,6 +94,19 @@ class KlugBot:
             # Check for learn command
             if learn_match := self.learn_pattern.match(text):
                 await self._handle_learn_command(event, say, learn_match)
+                return
+                
+            # Check for delete command
+            if delete_match := self.delete_pattern.match(text):
+                # Check authorization for delete commands (same as learn)
+                if not self.file_handler.is_authorized(event.get('user')):
+                    await say(
+                        text="Sorry, you are not authorized to delete entries.",
+                        thread_ts=event.get('ts')
+                    )
+                    return
+                    
+                await self._handle_delete_command(event, say, delete_match)
                 return
             
             # Check for query
@@ -339,6 +356,63 @@ class KlugBot:
             )
 
 
+    async def _handle_delete_command(self, event: dict, say, match):
+        """Handle the delete command to remove entries with matching source URL."""
+        try:
+            # Extract the URL from the match
+            url = match.group('content')
+            
+            
+            if not url:
+                await say(
+                    text="Delete usage: @klug-bot delete <source_url>. Please provide a valid URL to delete.",
+                    thread_ts=event.get('ts')
+                )
+                return
+            
+            url = url.strip()
+            
+            # Slack adds angle brackets to urls
+            # so remove angle brackets if present
+            if url.startswith('<') and url.endswith('>'):
+                url = url[1:-1]
+            print(f'Delete url: {url}')
+                
+            # First delete from PostgreSQL and get IDs for ChromaDB deletion
+            pg_count, entry_ids = await self.kb.delete_entries_by_source_url(url)
+            
+            # Then delete from ChromaDB using the entry IDs
+            chroma_count_by_ids = 0
+            if entry_ids:
+                chroma_count_by_ids = await self.embedding_manager.delete_embeddings_by_ids(entry_ids)
+            
+            # Also try deletion by source_url in case there are any orphaned entries
+            chroma_count_by_url = await self.embedding_manager.delete_embeddings_by_source_url(url)
+            
+            # Total ChromaDB deletions (should be same as pg_count in normal operation)
+            total_chroma_deletions = max(chroma_count_by_ids, chroma_count_by_url)
+            
+            # Report results
+            if pg_count > 0 or total_chroma_deletions > 0:
+                await say(
+                    text=f"Successfully deleted entries with source URL: {url}\n"
+                         f"• Entries removed from PostgreSQL: {pg_count}\n"
+                         f"• Entries removed from vector database: {total_chroma_deletions}",
+                    thread_ts=event.get('ts')
+                )
+            else:
+                await say(
+                    text=f"No entries found with source URL: {url}",
+                    thread_ts=event.get('ts')
+                )
+                
+        except Exception as e:
+            logger.error(f"Error handling delete command: {e}", exc_info=True)
+            await say(
+                text="Sorry, I encountered an error while trying to delete entries.",
+                thread_ts=event.get('ts')
+            )
+            
     async def shutdown(self):
         """Cleanup resources on shutdown."""
         try:

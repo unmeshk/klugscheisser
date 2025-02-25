@@ -11,6 +11,9 @@ from sqlalchemy.orm import sessionmaker
 import uuid
 import os
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Initialize SQLAlchemy
 Base = declarative_base()
@@ -119,31 +122,38 @@ class KnowledgeBase:
                 session.commit()
                 return True
             return False
+            
+    async def delete_entries_by_source_url(self, source_url: str) -> int:
+        """Delete all knowledge entries with matching source_url.
+        
+        Args:
+            source_url: The source URL to match against.
+            
+        Returns:
+            Number of entries deleted.
+        """
+        with self.SessionLocal() as session:
+            # Debug: Check what URLs actually exist in the database
+            all_urls = session.query(KnowledgeEntry.source_url).distinct().all()
+            logger.info(f"Available URLs in DB: {all_urls}")
+            logger.info(f"Looking for URL: '{source_url}'")
+            
+            # Find all entries with matching source_url
+            entries = session.query(KnowledgeEntry).filter(KnowledgeEntry.source_url == source_url).all()
+            
+            # Get IDs before deletion for ChromaDB deletion
+            entry_ids = [str(entry.id) for entry in entries]
+            
+            # Delete the entries
+            count = session.query(KnowledgeEntry).filter(KnowledgeEntry.source_url == source_url).delete()
+            session.commit()
+            
+            return count, entry_ids
 
     async def search_by_tags(self, tags: List[str]) -> List[KnowledgeEntry]:
         """Search entries by tags."""
         with self.SessionLocal() as session:
             return session.query(KnowledgeEntry).filter(KnowledgeEntry.tags.overlap(tags)).all()
-
-    async def setup_vector_store(self):
-        """
-        Placeholder for ChromaDB integration.
-        This will be implemented in a future update to:
-        1. Initialize ChromaDB connection
-        2. Create collection for embeddings
-        3. Set up indexing and similarity search
-        """
-        pass
-
-    async def semantic_search(self, query: str, limit: int = 5) -> List[KnowledgeEntry]:
-        """
-        Placeholder for semantic search implementation.
-        Will be implemented to:
-        1. Generate embedding for query
-        2. Perform similarity search in ChromaDB
-        3. Return matched entries from PostgreSQL
-        """
-        pass
 
 # Stub for connecting with Slack bot
 async def process_knowledge_command(kb: KnowledgeBase, command: str, message_data: dict) -> str:
