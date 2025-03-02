@@ -65,7 +65,8 @@ if __name__ == "__main__":
             f"Missing required environment variables: {', '.join(missing_vars)}"
         )
     
-   
+    if not os.getenv("KLUGBOT_LOG_CHANNEL"):
+        logger.info("KLUGBOT_LOG_CHANNEL not set in env, using default from settings")
 
     # Run the server
     uvicorn.run(app, host="0.0.0.0", port=3000)

@@ -15,7 +15,7 @@ from models import KnowledgeBase, KnowledgeEntrySchema
 from embeddingmanager import EmbeddingManager
 from queryhandler import QueryHandler
 from filehandler import FileHandler
-from settings import MAX_FILE_SIZE
+from settings import MAX_FILE_SIZE, KLUGBOT_LOG_CHANNEL
 
 
 logger = logging.getLogger(__name__)
@@ -33,6 +33,10 @@ class KlugBot:
         self.embedding_manager = EmbeddingManager()
         self.query_handler = QueryHandler(self.embedding_manager)
         self.file_handler = FileHandler(self.kb, self.embedding_manager)
+        self.log_channel = os.getenv("KLUGBOT_LOG_CHANNEL",KLUGBOT_LOG_CHANNEL)
+        #response = self.bolt_app.auth_test()
+        #self.slack_url = response["url"] 
+        #print(f'Started up with slack url: {self.slack_url}')
         
         # Command patterns
         self.learn_pattern = re.compile(
@@ -150,6 +154,11 @@ class KlugBot:
                 text=f"I've learned that: {content}\nStored with ID: {entry.id}",
                 thread_ts=event.get('ts')
             )
+
+            # Log the successful learn action
+            message_link = self._construct_message_link(event)
+            details = f"Knowledge ID: {entry.id}"
+            await self._log_action("learn", event.get('user', ''), message_link, details)
             
         except Exception as e:
             logger.error(f"Error handling learn command: {e}", exc_info=True)
@@ -439,6 +448,12 @@ class KlugBot:
                     text=summary,
                     thread_ts=event.get('ts')
                 )
+
+                # Log the successful file upload action
+                message_link = self._construct_message_link(event)
+                details = f"File: {file['name']}, Type: {file['filetype']}, " \
+                        f"Chunks: {results['stored_chunks']}/{results['total_chunks']}"
+                await self._log_action("file_import", event.get('user', ''), message_link, details)
                 
             finally:
                 # Clean up temp file
@@ -501,6 +516,11 @@ class KlugBot:
                          f"• Entries removed from vector database: {total_chroma_deletions}",
                     thread_ts=event.get('ts')
                 )
+
+                # Log the successful delete action
+                message_link = self._construct_message_link(event)
+                details = f"Filters: {filter_desc}, Removed: {pg_count} PG entries & {total_chroma_deletions} Chroma entries"
+                await self._log_action("delete", event.get('user', ''), message_link, details)
             else:
                 await say(
                     text=f"No entries found matching {filter_desc}",
@@ -518,7 +538,7 @@ class KlugBot:
         """Show help for the delete command."""
         message = "Delete usage examples:\n" \
                  "• `@klug-bot --delete url:https://example.com`\n" \
-                 "• `@klug-bot --delete source:slack`\n" \
+                 "• `@klug-bot --delete source:<slack|offline>`\n" \
                  "• `@klug-bot --delete date:2025-02-22`\n" \
                  "• `@klug-bot --delete source:offline date:2025-02-22`"
         
@@ -786,6 +806,36 @@ class KlugBot:
                                 logger.info(f"Added image from thread message with ts: {msg.get('ts')}")
         
         return "\n".join(thread_context), image_contexts
+    
+    async def _log_action(self, action_type: str, user_id: str, message_link: str, details: str = None):
+        """
+        Log bot actions to the dedicated log channel.
+        
+        Args:
+            action_type: Type of action (e.g., "learn", "delete")
+            user_id: The Slack user ID who triggered the action
+            message_link: Link to the original Slack message
+            details: Additional details about the action (optional)
+        """
+        try:
+            # Format the log message
+            log_message = f"*Action:* {action_type.upper()}\n*User:* <@{user_id}>\n*Source:* <{message_link}|View original message>"
+            
+            if details:
+                log_message += f"\n*Details:* {details}"
+            
+            # Post message to log channel
+            await self.bolt_app.client.chat_postMessage(
+                channel=self.log_channel,
+                text=log_message,
+                unfurl_links=False  # Prevent link expansion
+            )
+            
+            logger.info(f"Logged {action_type} action by user {user_id}")
+            
+        except Exception as e:
+            logger.error(f"Error logging {action_type} action: {e}", exc_info=True)
+            # Don't raise the exception - logging should not interrupt the main flow
             
     async def shutdown(self):
         """Cleanup resources on shutdown."""

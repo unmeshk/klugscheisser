@@ -15,7 +15,7 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
     - Vector DB client library (e.g., FAISS, Weaviate, Qdrant, or Chroma)
     - Database driver (PostgreSQL/MySQL)
     - File parsing libraries (for CSV, JSON, TXT, Markdown, PDF)
-- [ X **Organize Directory Structure**
+- [X] **Organize Directory Structure**
   - [X] Create folders for:
     - `/src` (source code)
     - `/tests` (unit and integration tests)
@@ -95,16 +95,16 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
   - [X] Script to allow offline uploading of data by recursively going through a directory.
 - [X] **Admin Trigger**
   - [X] Ensure that bulk imports are restricted to admin users.
-- [ ] **Bulk delete**
-  - [ ] Allow users to delete everything from a specific source using `@klug-bot delete`
-  - [ ] Add source and date specification to metadata during import. e.g., 'source':'offline' 'date':'2025-02-24' or 'source':'slack' 'date':'2025-02-23'. This gives ability to delete based on source as well as date. 
+- [X] **Bulk delete**
+  - [X] Allow users to delete everything from a specific source using `@klug-bot delete`
+  - [X] Add source and date specification to metadata during import. e.g., 'source':'offline' 'date':'2025-02-24' or 'source':'slack' 'date':'2025-02-23'. This gives ability to delete based on source as well as date. 
 
 
 ---
 
 ## 6.5 Improved context for conversations
-- [ ] **Add message thread as context**
-  - [ ] Copy over everything in previous messages in thread as context if app in mentioned in a thread/
+- [X] **Add message thread as context**
+  - [X] Copy over everything in previous messages in thread as context if app in mentioned in a thread/
 
 ---
 
