@@ -20,6 +20,8 @@ class FileHandler:
         '.json': 'application/json',
         '.txt': 'text/plain',
         '.md': 'text/markdown',
+        '.mdx': 'text/markdown+jsx',
+        '.rst': 'text/x-rst',
         '.pdf': 'application/pdf'
     }
     
@@ -229,6 +231,15 @@ class FileHandler:
     async def _store_chunk(self, content: str, metadata: Dict[str, Any]) -> bool:
         """Store a content chunk in both databases."""
         try:
+            # Get current date in ISO format (YYYY-MM-DD)
+            from datetime import date
+            current_date = date.today().isoformat()
+            
+            # Determine source ('slack' for Slack uploads, 'offline' for bulk imports)
+            source = 'slack'
+            if metadata.get('import_source') == 'bulk_import':
+                source = 'offline'
+                
             # Create knowledge entry
             entry = KnowledgeEntrySchema(
                 content=content,
@@ -239,7 +250,9 @@ class FileHandler:
                 additional_metadata={
                     'file_type': metadata['file_type'],
                     'file_name': metadata['file_name'],
-                    'import_source': 'file_upload'
+                    'import_source': 'file_upload',
+                    'source': source,
+                    'date': current_date
                 }
             )
             entry = await self.kb.create_entry(entry)
@@ -259,7 +272,9 @@ class FileHandler:
                     'tags': 'imported',
                     'file_type': metadata['file_type'],
                     'file_name': metadata['file_name'],
-                    'import_source': 'file_upload'
+                    'import_source': 'file_upload',
+                    'source': source,
+                    'date': current_date
                 }
             )
             

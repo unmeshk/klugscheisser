@@ -130,7 +130,7 @@ class KnowledgeBase:
             source_url: The source URL to match against.
             
         Returns:
-            Number of entries deleted.
+            Number of entries deleted and their IDs.
         """
         with self.SessionLocal() as session:
             # Debug: Check what URLs actually exist in the database
@@ -148,6 +148,55 @@ class KnowledgeBase:
             count = session.query(KnowledgeEntry).filter(KnowledgeEntry.source_url == source_url).delete()
             session.commit()
             
+            return count, entry_ids
+            
+    async def delete_entries_by_filters(self, filters: dict) -> tuple:
+        """Delete all knowledge entries that match the given filters.
+        
+        Args:
+            filters: A dictionary of filters to apply. Supported keys:
+                - url: The source URL to match
+                - source: The source type ('slack' or 'offline')
+                - date: The date in ISO format (YYYY-MM-DD)
+            
+        Returns:
+            Tuple of (count of deleted entries, list of deleted entry IDs)
+        """
+        with self.SessionLocal() as session:
+            # Start with a base query
+            query = session.query(KnowledgeEntry)
+            
+            # Apply filters
+            if 'url' in filters and filters['url']:
+                query = query.filter(KnowledgeEntry.source_url == filters['url'])
+                
+            # For additional_metadata fields (source, date), we need to use JSON operators
+            if 'source' in filters and filters['source']:
+                # PostgreSQL JSON containment operator @>
+                query = query.filter(
+                    KnowledgeEntry.additional_metadata.contains({'source': filters['source']})
+                )
+                
+            if 'date' in filters and filters['date']:
+                query = query.filter(
+                    KnowledgeEntry.additional_metadata.contains({'date': filters['date']})
+                )
+                
+            # Get matching entries before deletion
+            entries = query.all()
+            
+            if not entries:
+                logger.info("No entries matched the deletion filters")
+                return 0, []
+                
+            # Get IDs for ChromaDB deletion
+            entry_ids = [str(entry.id) for entry in entries]
+            
+            # Execute deletion
+            count = query.delete(synchronize_session=False)
+            session.commit()
+            
+            logger.info(f"Deleted {count} entries matching filters: {filters}")
             return count, entry_ids
 
     async def search_by_tags(self, tags: List[str]) -> List[KnowledgeEntry]:

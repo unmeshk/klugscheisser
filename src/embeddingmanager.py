@@ -119,3 +119,52 @@ class EmbeddingManager:
         except Exception as e:
             logger.error(f"Error deleting embeddings by source_url: {e}", exc_info=True)
             raise
+            
+    async def delete_embeddings_by_filters(self, filters: dict) -> int:
+        """Delete embeddings matching multiple filter criteria.
+        
+        Args:
+            filters: Dictionary of filter criteria with keys:
+                - url: Source URL to match
+                - source: Source type ('slack' or 'offline')
+                - date: Date in ISO format (YYYY-MM-DD)
+                
+        Returns:
+            Number of deleted embeddings
+        """
+        try:
+            # Build where clause for ChromaDB
+            where_clause = {}
+            
+            if 'url' in filters and filters['url']:
+                where_clause["source_url"] = filters['url']
+                
+            if 'source' in filters and filters['source']:
+                where_clause["source"] = filters['source']
+                
+            if 'date' in filters and filters['date']:
+                where_clause["date"] = filters['date']
+                
+            if not where_clause:
+                logger.warning("No valid filters provided for ChromaDB deletion")
+                return 0
+                
+            # Query to find matching documents
+            results = self.collection.get(
+                where=where_clause,
+                include=["metadatas", "documents"]
+            )
+            
+            if not results or not results["ids"]:
+                logger.info(f"No embeddings found matching filters: {filters}")
+                return 0
+                
+            # Delete the matched documents
+            self.collection.delete(ids=results["ids"])
+            
+            logger.info(f"Deleted {len(results['ids'])} embeddings matching filters: {filters}")
+            return len(results["ids"])
+            
+        except Exception as e:
+            logger.error(f"Error deleting embeddings by filters: {e}", exc_info=True)
+            raise

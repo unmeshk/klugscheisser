@@ -3,7 +3,7 @@
 Script to recursively process files from a directory and import them into the knowledge databases.
 
 Usage:
-    python add_to_db.py --directory /path/to/directory --formats txt,md,pdf --url-prefix https://example.com
+    python add_to_db.py --directory /path/to/directory --formats txt,md,mdx,rst,pdf,csv,json --url-prefix https://example.com
 """
 
 import argparse
@@ -88,7 +88,8 @@ async def process_directory(
                         "ts": str(Path(file_path).stat().st_mtime),
                         "file_url": source_url,
                         "file_type": file_ext.lstrip('.'),
-                        "file_name": file
+                        "file_name": file,
+                        "import_source": "bulk_import"  # Mark as bulk import for source='offline'
                     }
                     
                     # Process the file
@@ -129,7 +130,7 @@ async def main():
     parser.add_argument(
         "--formats", "-f", 
         required=True, 
-        help="Comma-separated list of file formats to process (e.g., txt,md,pdf)"
+        help="Comma-separated list of file formats to process (e.g., txt,md,mdx,rst,pdf,csv,json)"
     )
     
     parser.add_argument(

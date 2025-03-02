@@ -97,6 +97,7 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
   - [X] Ensure that bulk imports are restricted to admin users.
 - [ ] **Bulk delete**
   - [ ] Allow users to delete everything from a specific source using `@klug-bot delete`
+  - [ ] Add source and date specification to metadata during import. e.g., 'source':'offline' 'date':'2025-02-24' or 'source':'slack' 'date':'2025-02-23'. This gives ability to delete based on source as well as date. 
 
 
 ---
