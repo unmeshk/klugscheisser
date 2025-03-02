@@ -321,7 +321,7 @@ class KlugBot:
     async def _get_slack_thread_history(self, client, channel_id, thread_ts):
         """ Get the slack message history from the thread"""
         try:
-            reply = client.conversations_replies(
+            reply = await client.conversations_replies(
                 channel=channel_id,
                 ts=thread_ts
             )
@@ -339,7 +339,7 @@ class KlugBot:
         
         except Exception as e:
             logger.error(f"Error getting thread history: {e}")
-            return ""
+            return "", []
 
     async def _handle_query_command(self, event: dict, say, match, client=None):
         """Handle knowledge query and generate response."""
@@ -359,40 +359,14 @@ class KlugBot:
                 text_contents, image_contents = await self._get_slack_thread_history(client, channel_id, thread_ts)
             else:
                 # If not in a thread, just use the current message as context
-                text_content, image_content = await self.get_message_content(event, client)
+                text_content, image_content = await self._get_slack_message_content(event, client)
                 text_contents = [text_content]
                 image_contents = [image_content]
                     
-            # Initialize variables for context
-            thread_context = ""
-            image_contexts = []
+            for t,i in zip(text_contents,image_contents):
+                logger.info(f'text_content:{t} and number of images: {len(i)}')
             
-            # Check if this message has images
-            current_images = await self._process_current_message_images(event, client)
-            if current_images:
-                image_contexts.extend(current_images)
-                logger.info(f"Found {len(current_images)} images in current message")
-            
-            # Check if this is in a thread
-            thread_ts = event.get("thread_ts")
-            if thread_ts and client:
-                # Process thread context
-                logger.info(f"Query in thread, gathering context from {thread_ts}")
-                thread_context, thread_images = await self._process_thread_context(client, event)
-                if thread_context:
-                    logger.info(f"Thread context gathered: {len(thread_context)} chars, {len(thread_images)} images")
-                
-                # Add thread images to our image contexts
-                image_contexts.extend(thread_images)
-            
-            # Process query with context if available
-            if thread_context or image_contexts:
-                response, entries = await self.query_handler.process_query_with_context(
-                    query, thread_context, image_contexts
-                )
-            else:
-                # Use standard query processing if no context
-                response, entries = await self.query_handler.process_query(query)
+            response, entries = await self.query_handler.process_query(text_contents, image_contents)
             
             # Format response for Slack
             formatted_response = self.query_handler.format_slack_response(response, entries)
