@@ -85,7 +85,7 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 - [X] **File Upload Endpoint/Handler**
   - [X] Implement an endpoint or Slack event handler for file uploads.
   - [X] Support various file formats: CSV, JSON, TXT, Markdown, PDF.
-  - [ ] Support rst, mdx files
+  - [X] Support rst, mdx files
 - [X] **File Parsing & Import**
   - [X] Parse uploaded files to extract individual knowledge entries.
   - [X] Validate and store each entry in the relational database.
@@ -118,8 +118,8 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
     - Manual Edit
 - [ ] **Editing & Deletion**
   - [ ] Add command handling for editing entries (e.g., "@klug-bot edit 'The SRE lead is Vlad' to 'The SRE lead is Alice'").
-  - [ ] Restrict deletion functionality to admin users.
-  - [ ] Log all edits and deletions in a dedicated bot-log channel.
+  - [X] Restrict deletion functionality to admin users.
+  - [X] Log all edits and deletions in a dedicated bot-log channel.
 - [ ] **Outdated Knowledge Handling**
   - [ ] Flag entries older than six months as possibly outdated.
   - [ ] Implement a review request process that notifies admins.
@@ -130,8 +130,8 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 - [ ] **Rich Message Formatting**
   - [ ] Format responses using Slack’s rich formatting (bold, bullet lists, inline links, code blocks).
   - [ ] Ensure responses are always posted in a thread.
-- [ ] **Rate Limits & Permissions**
-  - [ ] Enforce that all users can query, but only admins can perform sensitive actions (file uploads, deletion, conflict resolutions).
+- [X] **Rate Limits & Permissions**
+  - [X] Enforce that all users can query, but only admins can perform sensitive actions (file uploads, deletion, conflict resolutions).
 
 ---
 

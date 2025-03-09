@@ -11,11 +11,11 @@ from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 
 from typing import Dict, Any, Optional, List, Tuple
-from models import KnowledgeBase, KnowledgeEntrySchema
-from embeddingmanager import EmbeddingManager
-from queryhandler import QueryHandler
-from filehandler import FileHandler
-from settings import MAX_FILE_SIZE, KLUGBOT_LOG_CHANNEL
+from src.models import KnowledgeBase, KnowledgeEntrySchema
+from src.embeddingmanager import EmbeddingManager
+from src.queryhandler import QueryHandler
+from src.filehandler import FileHandler
+from src.settings import MAX_FILE_SIZE, KLUGBOT_LOG_CHANNEL
 
 
 logger = logging.getLogger(__name__)
@@ -34,9 +34,7 @@ class KlugBot:
         self.query_handler = QueryHandler(self.embedding_manager)
         self.file_handler = FileHandler(self.kb, self.embedding_manager)
         self.log_channel = os.getenv("KLUGBOT_LOG_CHANNEL",KLUGBOT_LOG_CHANNEL)
-        #response = self.bolt_app.auth_test()
-        #self.slack_url = response["url"] 
-        #print(f'Started up with slack url: {self.slack_url}')
+        self.slack_url = None
         
         # Command patterns
         self.learn_pattern = re.compile(
@@ -61,7 +59,14 @@ class KlugBot:
         async def handle_mention(event, say, client):
             """Handle when the bot is mentioned in a channel."""
             try:
+
+                # get the slack workspace url the first time that the bot is mentioned
+                if not self.slack_url:
+                    response = await client.auth_test()
+                    self.slack_url = response["url"] 
+        
                 text = event.get('text', '')
+                logger.info('Got an app mention')
 
                 # First check if this is a learn command
                 if learn_match := self.learn_pattern.match(text):
@@ -185,7 +190,9 @@ class KlugBot:
             timestamp = event.get('ts', '').replace('.', '')
             
             if all([team, channel, timestamp]):
-                return f"https://slack.com/archives/{channel}/p{timestamp}"
+                new_link = f"{self.slack_url}archives/{channel}/p{timestamp}"
+                print(f'created link: {new_link}')
+                return new_link
         except Exception as e:
             logger.warning(f"Could not construct message link: {e}")
         
@@ -405,9 +412,8 @@ class KlugBot:
             # Download file
             temp_path = f"/tmp/{file['name']}"
             try:
-                # Download the file using the bot's token for authentication
-                import aiohttp
                 async with aiohttp.ClientSession() as session:
+                    print(f"ClientSession in klugbot: {session.__module__}")
                     async with session.get(
                         download_url,
                         headers={"Authorization": f"Bearer {os.environ['SLACK_BOT_TOKEN']}"}
@@ -417,6 +423,7 @@ class KlugBot:
                         content = await resp.read()
                 
                 # Save file temporarily
+                logger.info('File read correctly. Now writing...')
                 with open(temp_path, 'wb') as f:
                     f.write(content)
                 
@@ -463,9 +470,10 @@ class KlugBot:
         except Exception as e:
             logger.error(f"Error processing file upload: {e}", exc_info=True)
             await say(
-                text="Sorry, I encountered an error while processing the file.",
+                text=f"Sorry, I encountered an error while processing the file. Supported file types are `{*list(self.file_handler.SUPPORTED_FORMATS.values()),}`.",
                 thread_ts=event.get('ts')
             )
+            
 
 
     async def _handle_delete_command(self, event: dict, say, match):
@@ -481,6 +489,7 @@ class KlugBot:
                 return
             
             content = content.strip()
+            print(content)
             
             # Parse filter criteria
             filters = self._parse_delete_filters(content)
@@ -573,6 +582,7 @@ class KlugBot:
             if key == 'url' and value.startswith('<') and value.endswith('>'):
                 value = value[1:-1]
                 
+            print(value)
             filters[key] = value
             
         # If no structured filters found but content looks like a URL, 

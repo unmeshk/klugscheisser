@@ -69,4 +69,5 @@ if __name__ == "__main__":
         logger.info("KLUGBOT_LOG_CHANNEL not set in env, using default from settings")
 
     # Run the server
+    logger.info("Starting server")
     uvicorn.run(app, host="0.0.0.0", port=3000)

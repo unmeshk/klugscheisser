@@ -168,6 +168,7 @@ class KnowledgeBase:
             
             # Apply filters
             if 'url' in filters and filters['url']:
+                print(f'Looking for url = {filters["url"]}')
                 query = query.filter(KnowledgeEntry.source_url == filters['url'])
                 
             # For additional_metadata fields (source, date), we need to use JSON operators

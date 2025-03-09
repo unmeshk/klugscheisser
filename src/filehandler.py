@@ -6,8 +6,8 @@ import PyPDF2
 from typing import List, Dict, Any, AsyncGenerator
 from pathlib import Path
 import aiofiles
-from settings import KLUGBOT_TEACHERS
-from models import KnowledgeEntrySchema
+from src.settings import KLUGBOT_TEACHERS
+from src.models import KnowledgeEntrySchema
 
 # Configure logging
 logger = logging.getLogger(__name__)

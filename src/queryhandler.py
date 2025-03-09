@@ -8,7 +8,7 @@ import tempfile
 from typing import List, Dict, Any, Optional, Tuple, Union
 from google import genai
 from google.genai import types
-from settings import (
+from src.settings import (
     MAX_RESULTS,
     QUERY_PROMPT_TEMPLATE,
     MAX_OUTPUT_TOKENS,
