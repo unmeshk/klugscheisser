@@ -136,8 +136,8 @@ This checklist outlines all the steps necessary to build the Slack Knowledge Bot
 ---
 
 ## 9. Testing & Deployment
-- [ ] **Unit Testing**
-  - [ ] Write tests for:
+- [X] **Unit Testing**
+  - [X] Write tests for:
     - Data model CRUD operations.
     - Knowledge storage and retrieval functions.
     - Slack event handlers.
