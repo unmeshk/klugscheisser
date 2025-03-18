@@ -1,9 +1,3 @@
--- Grant necessary privileges to the klugbot user
-GRANT USAGE ON SCHEMA public TO klugbot;
-GRANT CREATE ON SCHEMA public TO klugbot;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO klugbot;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO klugbot;
-
 -- Create the knowledge_entries table if it doesn't exist
 CREATE TABLE IF NOT EXISTS knowledge_entries (
     id UUID PRIMARY KEY,
