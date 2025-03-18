@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# project specific ignores
+chroma_storage/
+test_db.py
