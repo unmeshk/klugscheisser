@@ -92,7 +92,6 @@ class QueryHandler:
         """Generate a response using Gemini."""
         try:
             # Format the prompt using the template
-            print(texts[-1])
             prompt = QUERY_PROMPT_TEMPLATE.format(
                 query=texts[-1],
                 contexts='\n'.join(contexts)

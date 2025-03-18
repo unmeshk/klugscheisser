@@ -256,9 +256,6 @@ class FileHandler:
                 }
             )
             entry = await self.kb.create_entry(entry)
-
-            #print(f'Storing: {entry.id}')
-            #print(f'metadata: {metadata}')
             
             # Store embedding
             await self.embedding_manager.store_embedding(

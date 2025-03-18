@@ -42,19 +42,6 @@ This will:
 
 Access the application at http://localhost:3000.
 
-## Running Tests
-
-To run the entire test suite:
-
-```bash
-./scripts/run_tests_docker.sh
-```
-
-To run a specific test file or directory:
-
-```bash
-./scripts/run_tests_docker.sh tests/unit/test_models.py
-```
 
 ## Docker Services
 
@@ -66,16 +53,9 @@ The main application service that runs the Klugbot Slack bot.
 ### db
 PostgreSQL database for production use.
 
-### test
-Test runner service that executes the test suite.
-
-### db-test
-Separate PostgreSQL database for testing purposes.
-
 ## Volumes
 
 - `postgres_data`: Persists the production database data
-- `postgres_test_data`: Persists the test database data
 - `chroma_data`: Persists the ChromaDB vector database
 
 ## Customizing the Setup
@@ -127,17 +107,6 @@ docker-compose logs db
 
 # Check if the database is healthy
 docker-compose exec db pg_isready -U klugbot
-```
-
-### Test Database Issues
-
-If tests are failing with database errors:
-
-```bash
-# Rebuild the test database
-docker-compose down -v
-docker-compose up -d db-test
-docker-compose run --rm test pytest -xvs tests/
 ```
 
 ### ChromaDB Issues

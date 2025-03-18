@@ -74,7 +74,12 @@ class KnowledgeBase:
     
     def __init__(self):
         """Initialize database connection and ChromaDB client."""
-        self.db_url = os.getenv('DATABASE_URL')
+        db_user = os.getenv('POSTGRES_USER')
+        db_pw = os.getenv('POSTGRES_PASSWORD')
+        db_port = os.getenv('POSTGRES_PORT')
+        db_db = os.getenv('POSTGRES_db')
+        db_ip = os.getenv('POSTGRES_IP')
+        self.db_url = f'postgresql://{db_user}:{db_pw}@{db_ip}:{db_port}/{db_db}'
         self.engine = create_engine(self.db_url)
         self.SessionLocal = sessionmaker(bind=self.engine)
         
@@ -168,7 +173,6 @@ class KnowledgeBase:
             
             # Apply filters
             if 'url' in filters and filters['url']:
-                print(f'Looking for url = {filters["url"]}')
                 query = query.filter(KnowledgeEntry.source_url == filters['url'])
                 
             # For additional_metadata fields (source, date), we need to use JSON operators

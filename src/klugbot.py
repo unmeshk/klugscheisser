@@ -191,7 +191,6 @@ class KlugBot:
             
             if all([team, channel, timestamp]):
                 new_link = f"{self.slack_url}archives/{channel}/p{timestamp}"
-                print(f'created link: {new_link}')
                 return new_link
         except Exception as e:
             logger.warning(f"Could not construct message link: {e}")
@@ -413,7 +412,6 @@ class KlugBot:
             temp_path = f"/tmp/{file['name']}"
             try:
                 async with aiohttp.ClientSession() as session:
-                    print(f"ClientSession in klugbot: {session.__module__}")
                     async with session.get(
                         download_url,
                         headers={"Authorization": f"Bearer {os.environ['SLACK_BOT_TOKEN']}"}
@@ -489,7 +487,6 @@ class KlugBot:
                 return
             
             content = content.strip()
-            print(content)
             
             # Parse filter criteria
             filters = self._parse_delete_filters(content)
@@ -582,7 +579,6 @@ class KlugBot:
             if key == 'url' and value.startswith('<') and value.endswith('>'):
                 value = value[1:-1]
                 
-            print(value)
             filters[key] = value
             
         # If no structured filters found but content looks like a URL, 

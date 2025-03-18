@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to recursively process files from a directory and import them into the knowledge databases.
+Script to recursively process files from a directory and import them into the Postgres and Chroma databases.
 
 Usage:
     python add_to_db.py --directory /path/to/directory --formats txt,md,mdx,rst,pdf,csv,json --url-prefix https://example.com
