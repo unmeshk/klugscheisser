@@ -15,6 +15,7 @@ load_dotenv()
 
 from klugbot import KlugBot
 
+
 # Initialize the FastAPI app
 app = FastAPI()
 
