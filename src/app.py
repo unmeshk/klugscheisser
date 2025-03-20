@@ -4,19 +4,19 @@ import signal
 import uvicorn
 import os
 
-from fastapi import FastAPI, Request
-from dotenv import load_dotenv
-from klugbot import KlugBot
-
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize the FastAPI app
-app = FastAPI()
+from fastapi import FastAPI, Request
+from dotenv import load_dotenv
 
 load_dotenv()
+
+from klugbot import KlugBot
+
+# Initialize the FastAPI app
+app = FastAPI()
 
  # Initialize bot
 bot = KlugBot()
@@ -50,13 +50,16 @@ signal.signal(signal.SIGINT, handle_sigterm)
 
 
 if __name__ == "__main__":
-
     # Verify required environment variables
     required_env_vars = [
         "SLACK_BOT_TOKEN", 
         "SLACK_SIGNING_SECRET",
         "GEMINI_API_KEY",
-        "DATABASE_URL"
+        "POSTGRES_USER",
+        "POSTGRES_PASSWORD",
+        "POSTGRES_PORT",
+        "POSTGRES_IP",
+        "POSTGRES_DB"
     ]
     missing_vars = [var for var in required_env_vars if not os.getenv(var)]
     
