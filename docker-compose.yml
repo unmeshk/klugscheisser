@@ -3,14 +3,10 @@ version: '3.8'
 services:
   app:
     build: .
+    env_file:
+      - .env
     ports:
       - "3000:3000"
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
-      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - KLUGBOT_LOG_CHANNEL=${KLUGBOT_LOG_CHANNEL:-klugbot-logs}
     volumes:
       - ./src:/app/src
       - chroma_data:/app/src/chroma_storage
