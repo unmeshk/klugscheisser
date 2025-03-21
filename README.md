@@ -135,10 +135,14 @@ For production environments, consider:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
 | `SLACK_BOT_TOKEN` | OAuth token starting with `xoxb-` | Yes |
 | `SLACK_SIGNING_SECRET` | Signing secret for request verification | Yes |
 | `GEMINI_API_KEY` | Google Gemini API key | Yes |
+| `POSTGRES_DB` | PostgreSQL DB for Klugbot | Yes |
+| `POSTGRES_USER` | PostgreSQL user for the Klugbot db | Yes |
+| `POSTGRES_PASSWORD` | PostgreSQL password for the Klugbot db | Yes |
+| `POSTGRES_IP` | IP of the PostgreSQL instance | Yes (Default: db) |
+| `POSTGRES_PORT` | PostgreSQL instance port| Yes (Default: 5432) |
 | `KLUGBOT_LOG_CHANNEL` | Channel name for bot logs | Yes (Default: klugbot-logs) |
 
 
