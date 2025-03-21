@@ -23,9 +23,10 @@ A Slack bot that learns knowledge shared with it and retrieves it when asked. Kl
 
 - Python 3.10+
 - Docker and Docker Compose
-- PostgreSQL database
+- PostgreSQL database (if present already, you can use the existing DB. If not, docker will spin one up for you)
 - Chroma DB
 - Slack app with appropriate permissions
+- Slack user IDs of people who are allowerd add info to the bot
 - Google Gemini API key
 
 ## Deployment Options
@@ -38,7 +39,8 @@ A Slack bot that learns knowledge shared with it and retrieves it when asked. Kl
    cd klugscheisser
    ```
 
-2. Create and configure PostgreSQL database
+2.  Create and configure the table on Postgres.
+   **Note**: This step is needed only if you using an existing Postgres db. If you are not, you can skip this step, and Docker will automatically create and configure one for you.
    ```bash
    psql postgres
    CREATE DATABASE klugbot_kb;
@@ -51,30 +53,37 @@ A Slack bot that learns knowledge shared with it and retrieves it when asked. Kl
    ```
 
 3. Set up environment variables (create a `.env` file)
+**Note**: The DATABASE_URL is only needed if you are connecting to an existing Postgres DB. 
    ```bash
-   DATABASE_URL=postgresql://klugbot:<password>@localhost:<port>/klugbot_kb
    SLACK_BOT_TOKEN=xoxb-your-slack-bot-token
    SLACK_SIGNING_SECRET=your-slack-signing-secret
    GEMINI_API_KEY=your-gemini-api-key
+   POSTGRES_USER=klugbot # change if needed
+   POSTGRES_PASSWORD=your-desired-postgres-db-password # or current password if connecting to an existing db
+   POSTGRES_IP=db # change if connecting to a local non-docker instance
+   POSTGRES_PORT=5432 # change if needed
+   POSTGRES_DB=klugbot_kb # change if needed
    KLUGBOT_LOG_CHANNEL=klugbot-logs  # Optional, defaults to this value
    ```
 
-4. Make sure you are exposing port 3000 (or whichever port you chose) using a service like ngrok for example.
+4. Make sure you are exposing port 3000 (or whichever port you chose) using nginx (or a service like ngrok if running locally) for example.
 
-4. Run Docker Compose
+5. Make sure you add to `settings.py` the slack user ids of folks on your slack who should be able to teach the bot new stuff.
+
+6. Create a channel called `klugbot-logs` (or whatever you want to call it but make sure you update the .env file if you do) and add Klug-bot to it. Add Klug-bot to any channels you want it to be active in.  
+
+7. Run Docker Compose
    ```bash
-   docker compose up --build
+   docker compose up --build 
    ```
 
 ### Production Deployment
 
 For production environments, consider:
 
-1. Using a reverse proxy like Nginx
-2. Adding HTTPS with Let's Encrypt
-3. Implementing proper log rotation
-4. Setting up monitoring and alerts
-5. Using a process manager like Supervisor
+1. Use a reverse proxy like Nginx
+2. Implement proper log rotation
+3. Set up monitoring and alerts
 
 ## Slack App Configuration
 

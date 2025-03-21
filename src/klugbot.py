@@ -185,11 +185,10 @@ class KlugBot:
     def _construct_message_link(self, event: dict) -> Optional[str]:
         """Construct a link to the Slack message."""
         try:
-            team = event.get('team')
             channel = event.get('channel')
             timestamp = event.get('ts', '').replace('.', '')
             
-            if all([team, channel, timestamp]):
+            if all([channel, timestamp]):
                 new_link = f"{self.slack_url}archives/{channel}/p{timestamp}"
                 return new_link
         except Exception as e:
@@ -377,14 +376,14 @@ class KlugBot:
                 text_content, image_content = await self._get_slack_message_content(event, client)
                 text_contents = [text_content]
                 image_contents = [image_content]
-                    
-            for t,i in zip(text_contents,image_contents):
-                logger.info(f'text_content:{t} and number of images: {len(i)}')
             
             response, entries = await self.query_handler.process_query(text_contents, image_contents)
             
             # Format response for Slack
-            formatted_response = self.query_handler.format_slack_response(response, entries)
+            if "i don't have any knowledge about that" in response.lstrip().lower():
+                formatted_response = "Sorry, I don't have relevant knowledge about that."
+            else:
+                formatted_response = self.query_handler.format_slack_response(response, entries)
             
             await say(
                 text=formatted_response,
@@ -431,8 +430,11 @@ class KlugBot:
                     'ts': event.get('ts'),
                     'file_url': file.get('url_private'),
                     'file_type': file.get('filetype'),
-                    'file_name': file.get('name')
+                    'file_name': file.get('name'),
+                    'source_url': self._construct_message_link(event)
                 }
+
+                logger.info(f'Added metadata source url: {metadata["source_url"]}')
                 
                 results = await self.file_handler.process_file_upload(
                     temp_path,
@@ -446,7 +448,8 @@ class KlugBot:
                     f"File processing complete:\n"
                     f"• Total chunks: {results['total_chunks']}\n"
                     f"• Successfully stored: {results['stored_chunks']}\n"
-                    f"• Failed: {results['failed_chunks']}"
+                    f"• Failed: {results['failed_chunks']}\n"
+                    f"• Source url: {metadata['source_url']}\n"
                 )
                 
                 await say(

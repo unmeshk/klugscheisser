@@ -77,9 +77,10 @@ class KnowledgeBase:
         db_user = os.getenv('POSTGRES_USER')
         db_pw = os.getenv('POSTGRES_PASSWORD')
         db_port = os.getenv('POSTGRES_PORT')
-        db_db = os.getenv('POSTGRES_db')
+        db_db = os.getenv('POSTGRES_DB')
         db_ip = os.getenv('POSTGRES_IP')
         self.db_url = f'postgresql://{db_user}:{db_pw}@{db_ip}:{db_port}/{db_db}'
+        logger.info(self.db_url)
         self.engine = create_engine(self.db_url)
         self.SessionLocal = sessionmaker(bind=self.engine)
         

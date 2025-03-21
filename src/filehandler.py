@@ -245,7 +245,7 @@ class FileHandler:
                 content=content,
                 slack_username=metadata['user'],
                 slack_timestamp=metadata['ts'],
-                source_url=metadata['file_url'],
+                source_url=metadata['source_url'] if metadata['source_url'] else metadata['file_url'],
                 tags=['imported'],
                 additional_metadata={
                     'file_type': metadata['file_type'],
@@ -255,6 +255,7 @@ class FileHandler:
                     'date': current_date
                 }
             )
+            logger.info(f"Stored filechunk metadata = {metadata['source_url'] if metadata['source_url'] else metadata['file_url']}")
             entry = await self.kb.create_entry(entry)
             
             # Store embedding
